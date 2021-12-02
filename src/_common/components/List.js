@@ -3,10 +3,11 @@ import React from "react";
 import ListItemTask from "./ListItemTask";
 
 function List({ list }) {
+  // console.log(list);
   return (
     <div>
       <h1>Lista</h1>
-      {list.length > 0 ? (
+      {list && list.length > 0 ? (
         <Lista sx={{ maxWidth: "600px" }}>
           {list.map((item, index) => (
             <ListItemTask item={item} key={index} />

@@ -6,28 +6,43 @@ import AddItem from "./_common/components/AddItem";
 import List from "./_common/components/List";
 import LoadingList from "./_common/Loading/LoadingList";
 import { db } from "./_common/services/firebase";
-import { collection, where, query, onSnapshot } from "@firebase/firestore";
 
 function TodoList() {
   const { data } = React.useContext(UserContext);
+  const [userData, setUserData] = React.useState([]);
   const [list, setList] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  // const listRef = collection(db, "list");
 
-  React.useEffect(() => {
-    let rows = [];
-    const listRef = collection(db, "list");
+  const user = React.useCallback(() => {
     if (data) {
-      console.log(data.uid);
-      const q = query(listRef, where("user", "==", `${data.uid}`));
-      const querySnapshot = onSnapshot(q, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          rows.push({ id: doc.id, ...doc.data() });
-        });
-      });
-      setList(rows);
-      setLoading(false);
+      setUserData(data);
+      return data;
     }
   }, [data]);
+
+  React.useEffect(() => {
+    const listItems = [];
+    const userId = user() ? user().uid : "";
+
+    db.collection("list")
+      .where("user", "==", userId)
+      .orderBy("create_at", "desc")
+      .onSnapshot((snapshot) => {
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setList(data);
+      });
+  }, [user]);
+
+  React.useEffect(() => {
+    if (list && list.length > 0) {
+      setLoading(false);
+    }
+    console.log(list);
+  }, [list]);
 
   return (
     <div>

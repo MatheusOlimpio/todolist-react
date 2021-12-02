@@ -18,7 +18,7 @@ function AddItem({ addItemToList }) {
     try {
       const list = new ListDataService();
       const newItem = await list.create(data.uid, task);
-      addItemToList((oldItems) => [...oldItems, newItem]);
+
       setSuccess("Tarefa adicionada com sucesso!");
     } catch (error) {
       setSuccess(null);
