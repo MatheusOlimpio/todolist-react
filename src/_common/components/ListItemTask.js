@@ -10,12 +10,18 @@ import {
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { db } from "../services/firebase";
-import { collection, doc, deleteDoc } from "@firebase/firestore";
+import { collection, doc, deleteDoc, updateDoc } from "@firebase/firestore";
 
 function ListItemTask({ item }) {
+  const listRef = collection(db, "list");
+
   const handleDelete = async () => {
-    const listRef = collection(db, "list");
     await deleteDoc(doc(listRef, item.id));
+    return true;
+  };
+
+  const handleCheck = async () => {
+    await updateDoc(doc(listRef, item.id), { checked: !item.checked });
     return true;
   };
 
@@ -33,7 +39,7 @@ function ListItemTask({ item }) {
           </IconButton>
         }
       >
-        <ListItemButton role={undefined} onClick={() => {}}>
+        <ListItemButton role={undefined} onClick={handleCheck}>
           <ListItemIcon>
             <Checkbox
               edge="start"

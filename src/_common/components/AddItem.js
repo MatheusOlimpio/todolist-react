@@ -1,10 +1,12 @@
-import { Alert, Button, FormControl, Grid, TextField } from "@mui/material";
+import { Button, FormControl, Grid, TextField } from "@mui/material";
 import React from "react";
 import ListDataService from "../services/ListService";
 import UserContext from "../context/UserContext";
-function AddItem({ addItemToList }) {
+import AlertSuccess from "./Alert/AlertSuccess";
+function AddItem() {
   const [task, setTask] = React.useState();
   const [success, setSuccess] = React.useState(null);
+  const [openMessage, setOpenMessage] = React.useState(false);
   const { data } = React.useContext(UserContext);
   function handleTask() {
     if (!task || task.length === 0) {
@@ -17,18 +19,21 @@ function AddItem({ addItemToList }) {
   const addTask = async () => {
     try {
       const list = new ListDataService();
-      const newItem = await list.create(data.uid, task);
-
+      await list.create(data.uid, task);
       setSuccess("Tarefa adicionada com sucesso!");
+      setOpenMessage(true);
     } catch (error) {
       setSuccess(null);
+    } finally {
+      setTask("");
+      setOpenMessage(false);
     }
   };
 
   return (
     <Grid item direction="row" alignItems="center" container spacing={2}>
+      <AlertSuccess openMessage={openMessage} message={success} />
       <Grid item xs={12} md={5}>
-        {success && <Alert severity="success">{success}</Alert>}
         <FormControl sx={{ width: "100%" }}>
           <TextField
             multiline
